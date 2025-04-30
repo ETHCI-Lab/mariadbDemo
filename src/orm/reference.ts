@@ -11,8 +11,8 @@ export const setRef = () => {
     const SemesterModel = getSemesterModel()
     const EnrollmentModel= getEnrollmentModel();
     if (StudentModel && CourseModel && SemesterModel && EnrollmentModel)  {
-        StudentModel.hasMany(EnrollmentModel, { foreignKey: 'Student_ID' });
-        EnrollmentModel.belongsTo(StudentModel, { foreignKey: 'Student_ID' });
+        StudentModel.hasMany(EnrollmentModel, { foreignKey: 'Student_ID' ,as: 'ENROLLMENT'});
+        EnrollmentModel.belongsTo(StudentModel, { foreignKey: 'Student_ID',as: 'STUDENT' });
         EnrollmentModel.belongsTo(CourseModel, { foreignKey: 'Course_ID' });
         EnrollmentModel.belongsTo(SemesterModel, { foreignKey: 'Semester_ID' });
     }

@@ -1,9 +1,11 @@
+import { model } from "mongoose";
 import { Service } from "../abstract/Service";
 import { Student } from "../interfaces/Student";
 import { getEnrollmentModel } from "../orm/EnrollmentModel";
 import { setRef } from "../orm/reference";
 import { getStudentModel, StudentInstance } from "../orm/StudentModel";
 import { resp } from "../utils/resp";
+import { getCourseModel } from "../orm/CourseModel";
 
 export class StudentService extends Service {
 
@@ -133,23 +135,55 @@ export class StudentService extends Service {
     public async findUngraded(): Promise<resp<Array<Student> | undefined>> {
         const StudentModel = getStudentModel();
         const EnrollmentModel = getEnrollmentModel();
-        
+        const CourseModel = getCourseModel();
+
         const res: resp<Array<Student> | undefined> = {
             code: 200,
             message: "",
             body: undefined
         }
 
-        if (StudentModel && EnrollmentModel) {
+        if (StudentModel && EnrollmentModel && CourseModel) {
             try {
-                setRef();
+                StudentModel.hasMany(EnrollmentModel, {
+                    foreignKey: 'Student_ID',
+                    as: 'ENROLLMENTS' // 通常用复数形式表示多个关联
+                });
+
+                CourseModel.hasMany(EnrollmentModel, {
+                    foreignKey: 'Course_ID',
+                    as: 'ENROLLMENTS' // 通常用复数形式表示多个关联
+                });
+
+                EnrollmentModel.belongsTo(StudentModel, {
+                    foreignKey: 'Student_ID',
+                    targetKey: 'Student_ID'
+                });
+
+                EnrollmentModel.belongsTo(CourseModel, {
+                    foreignKey: 'Course_ID',
+                    targetKey: 'Course_ID'
+                });
+
+
+
                 res.body = await StudentModel.findAll({
                     attributes: ['Student_ID', 'Name'],
-                    include: {
-                        model: EnrollmentModel,
-                        attributes: ['Course_ID']
-
-                    }
+                    include: [
+                        {
+                            model: EnrollmentModel,
+                            as: 'ENROLLMENTS',
+                            attributes: ['Course_ID', 'Semester_ID'],
+                            where: {
+                                Grade: null
+                            },
+                            include: {
+                                model: CourseModel,
+                                as: 'COURSE',
+                                attributes: ['Title'],
+                            }
+                        }
+                    ]
                 });
                 return res;
             } catch (error: any) {
@@ -161,7 +195,7 @@ export class StudentService extends Service {
                     errorMessage += `, Stack: ${error.stack}\n`;
                 }
                 if (error.errors) {
-                    errorMessage += `, Details: ${error.errors.map((e:any )=> e.message).join(', ')}`;
+                    errorMessage += `, Details: ${error.errors.map((e: any) => e.message).join(', ')}`;
                 }
 
                 res.message = errorMessage;

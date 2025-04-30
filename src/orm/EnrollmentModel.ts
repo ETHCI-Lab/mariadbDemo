@@ -17,7 +17,7 @@ export interface EnrollmentInstance extends Model<Enrollment, EnrollmentCreation
 export const getEnrollmentModel = () => {
     const instance = DB.sequelize;
 
-    if (instance != null) {
+    if (instance) {
         const Enrollment = instance.define<EnrollmentInstance>('ENROLLMENT', {
             Student_ID: {
                 type: DataTypes.CHAR(9),
@@ -60,7 +60,6 @@ export const getEnrollmentModel = () => {
             charset: 'utf8mb4',
             collate: 'utf8mb4_unicode_ci'
         });
-
         return Enrollment;
     } else {
         logger.error("not init")
