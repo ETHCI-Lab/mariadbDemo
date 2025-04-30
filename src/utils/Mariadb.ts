@@ -1,32 +1,30 @@
 import * as mariadb from "mariadb"
+import {Sequelize } from "sequelize"
 import { PoolConnection } from "mariadb";
 import { logger } from "../middlewares/log";
 
+
 export class Mariadb {
 
-    private pool: mariadb.Pool | null = null;
-    public connection: PoolConnection | null = null;
+    private sequelize: Sequelize | null = null;
 
     constructor() {
-
-        this.pool = mariadb.createPool({
+        this.sequelize = new Sequelize('gym_center613630234', process.env.DBUSER as string, process.env.DBPASSWORD as string, {
             host: process.env.DBHOST,
-            user: process.env.DBUSER,
-            password: process.env.DBPASSWORD,
             port: Number(process.env.DBPORT),
-            connectionLimit: 5
+            dialect: 'mariadb'
         });
 
         this.init();
     }
 
     private async init(){
-        if (this.pool != null) {
+        if (this.sequelize) {
             try {
-                this.connection = await this.pool.getConnection()
+                await this.sequelize.authenticate();
                 logger.info(`connected to : jdbc:mariadb://${process.env.DBHOST}:${process.env.DBPORT}/`)
             } catch (error) {
-                logger.error(error);
+                console.error('Unable to connect to the database:', error);
             }
         }
     }
