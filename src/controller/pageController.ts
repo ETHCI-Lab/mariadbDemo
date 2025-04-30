@@ -6,14 +6,14 @@ import { PageService } from "../Service/PageService";
 require('dotenv').config()
 
 export class PageController extends Contorller {
-  protected service: Service;
+  protected service: PageService;
 
   constructor(){
     super();
     this.service = new PageService();
   }
   
-  public sendPage(Request:Request, Response:Response){
+  public async sendPage(Request:Request, Response:Response){
     Response.sendFile(process.env.HomePagePath as string)
   }
 }

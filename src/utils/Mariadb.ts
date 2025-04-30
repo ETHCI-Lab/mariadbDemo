@@ -6,7 +6,7 @@ import { logger } from "../middlewares/log";
 
 export class Mariadb {
 
-    private sequelize: Sequelize | null = null;
+    public sequelize: Sequelize | null = null;
 
     constructor() {
         this.sequelize = new Sequelize('gym_center613630234', process.env.DBUSER as string, process.env.DBPASSWORD as string, {

@@ -1,4 +1,12 @@
 export interface Student {
-    student_id: string;     // 學號（VARCHAR(10)）
-    student_name: string;   // 學生姓名（VARCHAR(50)）
+    Student_ID: string;
+    Name: string;
+    Birth_Date?: Date;
+    Gender?: string;
+    Email?: string;
+    Phone?: string;
+    Address?: string;
+    Admission_Year?: number;
+    Status?: string;
+    Department_ID?: string;
 }

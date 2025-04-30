@@ -1,5 +1,5 @@
 export interface resp<E> {
-    code: string,
+    code: number,
     message: string,
     body: E
 }
